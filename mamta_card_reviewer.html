@@ -1045,7 +1045,7 @@ function loadImage(url) {
   lbl.textContent = fileMatch ? `file: ${fileMatch[1]}` : 'Loading…';
 
   // Point to local Python proxy server
-  const proxyUrl = `http://localhost:5000/image?url=${encodeURIComponent(url)}`;
+  const proxyUrl = `/image?url=${encodeURIComponent(url)}`;
   img.src = proxyUrl;
 }
 
@@ -1068,7 +1068,7 @@ function preloadImages(currentIndex) {
     if (nextIdx >= filteredRows.length) break;
     const url = filteredRows[nextIdx].link;
     if (url) {
-      const proxyUrl = `http://localhost:5000/image?url=${encodeURIComponent(url)}`;
+      const proxyUrl = `/image?url=${encodeURIComponent(url)}`;
       const img = new Image();
       img.src = proxyUrl;
     }
