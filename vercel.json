@@ -1,0 +1,18 @@
+{
+  "builds": [
+    {
+      "src": "proxy.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/image",
+      "dest": "/proxy.py"
+    },
+    {
+      "src": "/",
+      "dest": "/mamta_card_reviewer.html"
+    }
+  ]
+}

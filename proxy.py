@@ -14,14 +14,6 @@ session = requests.Session()
 # Use HTTP Basic Auth for SurveyCTO
 session.auth = (SCTO_EMAIL, SCTO_PASS)
 
-@app.route('/')
-def index():
-    try:
-        with open('mamta_card_reviewer.html', 'r', encoding='utf-8') as f:
-            return f.read()
-    except Exception as e:
-        return f"Error loading HTML: {e}", 500
-
 @app.route('/image')
 def proxy_image():
     url = request.args.get('url')
