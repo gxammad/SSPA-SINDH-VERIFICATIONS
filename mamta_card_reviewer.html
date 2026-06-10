@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mamta Card Reviewer — DFLT Phase 2</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f9fafb;
+    --surface: #ffffff;
+    --surface2: #f3f4f6;
+    --border: #e5e7eb;
+    --accent: #0f172a;
+    --accent2: #3b82f6;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --text: #111827;
+    --muted: #6b7280;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'Inter', sans-serif;
+    --heading: 'Montserrat', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .brand-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent2);
+    box-shadow: 0 0 8px var(--accent2);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .brand-title {
+    font-family: var(--heading);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .brand-sub {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  #counter-badge {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+  }
+  #counter-badge span { color: var(--accent); font-weight: 600; }
+
+  /* ── SETUP PANEL ── */
+  #setup-panel {
+    max-width: 560px;
+    margin: 60px auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+  }
+  #setup-panel h2 {
+    font-size: 20px;
+    margin-bottom: 8px;
+    color: var(--accent);
+    font-family: var(--heading);
+  }
+  #setup-panel p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+  .field-group { margin-bottom: 16px; }
+  .field-group label {
+    display: block;
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .field-group input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 12px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .field-group input:focus { border-color: var(--accent); }
+
+  .btn-primary {
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: opacity 0.2s;
+    margin-top: 8px;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+
+  .info-box {
+    background: rgba(88,166,255,0.08);
+    border: 1px solid rgba(88,166,255,0.25);
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-top: 16px;
+  }
+  .info-box code {
+    background: var(--bg);
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-family: var(--mono);
+    color: var(--accent);
+    font-size: 11px;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  #main { display: none; flex: 1; overflow: hidden; }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    height: calc(100vh - 57px);
+  }
+
+  /* ── IMAGE PANEL ── */
+  .img-panel {
+    background: #f1f5f9;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .img-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    z-index: 20;
+    transition: all 0.2s;
+  }
+  .img-nav-btn:hover { background: var(--surface2); transform: translateY(-50%) scale(1.05); }
+  .img-nav-btn.prev { left: 16px; }
+  .img-nav-btn.next { right: 16px; }
+  .img-nav-btn svg { width: 22px; height: 22px; }
+
+  .img-toolbar {
+    position: absolute;
+    top: 12px; left: 12px; right: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+    pointer-events: none;
+  }
+  .img-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    background: rgba(13,17,23,0.85);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 8px;
+    color: var(--muted);
+    pointer-events: all;
+  }
+  .img-open-btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    background: rgba(88,166,255,0.15);
+    border: 1px solid rgba(88,166,255,0.4);
+    border-radius: 4px;
+    padding: 4px 10px;
+    color: var(--accent);
+    cursor: pointer;
+    pointer-events: all;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .img-open-btn:hover { background: rgba(88,166,255,0.3); }
+
+  #card-image {
+    max-width: 90%;
+    max-height: calc(100vh - 160px);
+    border-radius: 8px;
+    object-fit: contain;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+    transition: opacity 0.3s;
+  }
+  #card-image.loading { opacity: 0.2; }
+
+  .img-error {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    color: var(--muted);
+    font-size: 14px;
+    text-align: center;
+  }
+  .img-error .err-icon { font-size: 48px; }
+  .img-error a {
+    color: var(--accent);
+    text-decoration: none;
+    font-family: var(--mono);
+    font-size: 12px;
+    background: rgba(88,166,255,0.1);
+    border: 1px solid rgba(88,166,255,0.3);
+    border-radius: 4px;
+    padding: 6px 14px;
+  }
+
+  /* ── CONTROL PANEL ── */
+  .ctrl-panel {
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .ctrl-section {
+    padding: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ctrl-section:last-child { border-bottom: none; }
+
+  .section-label {
+    font-family: var(--heading);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  /* Info fields */
+  .info-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 10px;
+  }
+  .info-row .lbl {
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .info-row .val {
+    font-size: 13px;
+    color: var(--text);
+    font-family: var(--mono);
+    word-break: break-all;
+  }
+  .info-row .val.trainer { color: var(--accent2); font-weight: 600; }
+  .info-row .val.time { color: var(--warn); }
+
+  /* Category select */
+  #cat-select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-family: var(--sans);
+    outline: none;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: border-color 0.2s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+  #cat-select:focus { border-color: var(--accent); }
+
+  /* Comments */
+  #comments-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 12px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    outline: none;
+    resize: vertical;
+    min-height: 70px;
+    transition: border-color 0.2s;
+  }
+  #comments-input:focus { border-color: var(--accent); }
+
+  /* Save button */
+  #save-btn {
+    width: 100%;
+    background: var(--accent2);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 11px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: var(--sans);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  #save-btn:hover { opacity: 0.88; }
+  #save-btn:active { transform: scale(0.98); }
+  #save-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Save status */
+  #save-status {
+    margin-top: 8px;
+    font-size: 12px;
+    font-family: var(--mono);
+    text-align: center;
+    min-height: 18px;
+    transition: color 0.3s;
+  }
+  .status-ok { color: var(--accent2); }
+  .status-err { color: var(--danger); }
+  .status-saving { color: var(--warn); }
+
+  /* Navigation */
+  .nav-row {
+    display: flex;
+    gap: 8px;
+  }
+  .nav-btn {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--sans);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .nav-btn:hover { background: var(--border); border-color: var(--accent); }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .nav-btn svg { flex-shrink: 0; }
+
+  /* Progress bar */
+  .progress-wrap {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 12px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  /* Category pills */
+  .cat-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .cat-pill {
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--sans);
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    user-select: none;
+    line-height: 1.4;
+  }
+  .cat-pill:hover { opacity: 0.85; transform: translateY(-1px); }
+  .cat-pill.active {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+
+  /* Category colors */
+  .c1  { background: #58a6ff; color: #fff; border-color: #58a6ff; }
+  .c2  { background: #3fb950; color: #fff; border-color: #3fb950; }
+  .c3  { background: #d29922; color: #fff; border-color: #d29922; }
+  .c4  { background: #f85149; color: #fff; border-color: #f85149; }
+  .c5  { background: #bc8cff; color: #fff; border-color: #bc8cff; }
+  .c6  { background: #ffa64d; color: #000; border-color: #ffa64d; }
+  .c7  { background: #56d3c8; color: #000; border-color: #56d3c8; }
+  .c8  { background: #ff69b4; color: #fff; border-color: #ff69b4; }
+  .c9  { background: #64d264; color: #000; border-color: #64d264; }
+  .c10 { background: #87cefa; color: #000; border-color: #87cefa; }
+  .c11 { background: #ffd700; color: #000; border-color: #ffd700; }
+  .c12 { background: #90ee90; color: #000; border-color: #90ee90; }
+  .c13 { background: #e6a0e6; color: #000; border-color: #e6a0e6; }
+  .c14 { background: #b0c4de; color: #000; border-color: #b0c4de; }
+  .c15 { background: #ffa07a; color: #000; border-color: #ffa07a; }
+  .c16 { background: #98fb98; color: #000; border-color: #98fb98; }
+  .c17 { background: #a9a9a9; color: #fff; border-color: #a9a9a9; }
+
+  /* Keyboard hint */
+  .kbd-hint {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--mono);
+    margin-top: 8px;
+    text-align: center;
+  }
+  .kbd-hint kbd {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-size: 10px;
+  }
+
+  /* Loading spinner */
+  #loading-overlay {
+    position: fixed; inset: 0;
+    background: rgba(13,17,23,0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    z-index: 100;
+  }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #loading-text { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+
+  /* Script setup modal */
+  #script-modal {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  #script-modal.show { display: flex; }
+  .modal-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    max-width: 580px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .modal-box h3 {
+    color: var(--accent);
+    font-family: var(--heading);
+    margin-bottom: 12px;
+    font-size: 18px;
+  }
+  .modal-box ol {
+    padding-left: 18px;
+    font-size: 13px;
+    line-height: 2;
+    color: var(--muted);
+  }
+  .modal-box ol li { margin-bottom: 4px; }
+  .modal-code {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent2);
+    white-space: pre;
+    overflow-x: auto;
+    margin: 12px 0;
+    line-height: 1.6;
+  }
+  .modal-close {
+    margin-top: 16px;
+    background: var(--border);
+    color: var(--text);
+    border: none;
+    border-radius: 6px;
+    padding: 8px 20px;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 13px;
+  }
+  .modal-close:hover { background: var(--muted); }
+
+  /* GAS URL field */
+  .gas-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .gas-row input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 11px;
+    outline: none;
+  }
+  .gas-row input:focus { border-color: var(--accent); }
+  .gas-row button {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .gas-row button:hover { border-color: var(--accent); }
+
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; grid-template-rows: 50vh auto; }
+    .ctrl-panel { overflow-y: auto; }
+    .img-panel { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <div id="loading-text">Loading sheet data…</div>
+</div>
+
+<!-- Script setup modal -->
+<div id="script-modal">
+  <div class="modal-box">
+    <h3>⚙️ Setup Google Apps Script (one time)</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.7">
+      To save category changes back to your Google Sheet, you need a free Google Apps Script Web App. Follow these steps once:
+    </p>
+    <ol>
+      <li>Open your Google Sheet → click <strong style="color:var(--text)">Extensions → Apps Script</strong></li>
+      <li>Delete any existing code and paste this:</li>
+    </ol>
+    <div class="modal-code" id="gas-code-block"></div>
+    <ol start="3">
+      <li>Click <strong style="color:var(--text)">Deploy → New deployment</strong></li>
+      <li>Type: <strong style="color:var(--text)">Web App</strong></li>
+      <li>Execute as: <strong style="color:var(--text)">Me</strong> · Access: <strong style="color:var(--text)">Anyone</strong></li>
+      <li>Click <strong style="color:var(--text)">Deploy</strong> → Copy the Web App URL</li>
+      <li>Paste it below:</li>
+    </ol>
+    <div class="gas-row">
+      <input type="text" id="gas-url-input" placeholder="https://script.google.com/macros/s/AKfy.../exec">
+      <button onclick="saveGasUrl()">Save</button>
+    </div>
+    <button class="modal-close" onclick="closeModal()">Close (read-only mode)</button>
+  </div>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="brand">
+    <div class="brand-dot"></div>
+    <div>
+      <div class="brand-title">MAMTA CARD REVIEWER</div>
+      <div class="brand-sub">DFLT Phase 2 · SurveyCTO</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <div id="counter-badge">Row <span id="cur-idx">—</span> of <span id="total-rows">—</span></div>
+    <button onclick="document.getElementById('script-modal').classList.add('show')"
+      style="font-size:11px;font-family:var(--mono);background:rgba(210,153,34,0.15);border:1px solid rgba(210,153,34,0.4);border-radius:4px;padding:4px 10px;color:var(--warn);cursor:pointer;">
+      ⚙ Setup Write-Back
+    </button>
+  </div>
+</header>
+
+<!-- Setup panel (shown before data loads) -->
+<div id="setup-panel" style="display:none">
+  <h2>// Configure Sheet</h2>
+  <p>Enter your Google Sheets details to begin reviewing cards.</p>
+  <div class="field-group">
+    <label>Spreadsheet ID</label>
+    <input type="text" id="sheet-id-input" placeholder="145w-MbnPIs93rFIVCvuY_ulGwIKkORfKNJxWPCE1Oz0">
+  </div>
+  <div class="field-group">
+    <label>API Key</label>
+    <input type="text" id="api-key-input" placeholder="AIzaSy...">
+  </div>
+  <div class="field-group">
+    <label>Sheet Tab Name</label>
+    <input type="text" id="sheet-tab-input" placeholder="Sheet1">
+  </div>
+  <button class="btn-primary" onclick="initFromSetup()">▶ Load Sheet</button>
+  <div class="info-box">
+    Make sure your sheet has columns: <code>start_time</code> <code>trainer_name</code>
+    <code>beneficiary_list</code> <code>mamta_card</code> <code>Catagory</code>
+    <code>Comments</code> <code>Verifier</code> — in that order (columns A–G).
+    Images require you to be <strong style="color:var(--text)">logged into SurveyCTO</strong> in this browser.
+  </div>
+</div>
+
+<!-- Main viewer -->
+<div id="main">
+  <div class="layout">
+    <!-- Image panel -->
+    <div class="img-panel">
+      <div class="img-toolbar">
+        <div class="img-label" id="img-label">No image</div>
+        <a id="img-open-link" class="img-open-btn" href="#" target="_blank">↗ Open in SurveyCTO</a>
+      </div>
+      <button class="img-nav-btn prev" onclick="navigate(-1)" title="Previous">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="img-nav-btn next" onclick="navigate(1)" title="Next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <img id="card-image" src="" alt="Card Image"
+        onerror="handleImgError()" onload="handleImgLoad()">
+      <div class="img-error" id="img-error">
+        <div class="err-icon">🔐</div>
+        <div>Image proxy failed to load<br>
+          <small style="font-size:11px;color:var(--muted)">Check if Python proxy is running</small>
+        </div>
+        <a id="err-open-link" href="#" target="_blank">Open Image directly ↗</a>
+      </div>
+    </div>
+
+    <!-- Control panel -->
+    <div class="ctrl-panel">
+
+      <!-- Quick category pills -->
+      <div class="ctrl-section">
+        <div class="section-label">Quick Select Category</div>
+        <div class="cat-pills" id="cat-pills"></div>
+      </div>
+
+      <!-- Row info -->
+      <div class="ctrl-section">
+        <div class="section-label">Row Info</div>
+        <div class="info-row">
+          <span class="lbl">Trainer</span>
+          <span class="val trainer" id="info-trainer">—</span>
+        </div>
+        <div class="info-row">
+          <span class="lbl">Time</span>
+          <span class="val time" id="info-time">—</span>
+        </div>
+        <div class="info-row" style="display: none;">
+          <span class="lbl">Beneficiary CNIC</span>
+          <span class="val" id="info-cnic">—</span>
+        </div>
+        <div class="info-row">
+          <span class="lbl">Current Category</span>
+          <span class="val" id="info-current-cat" style="color:var(--warn)">—</span>
+        </div>
+        <div class="info-row">
+          <span class="lbl">Verifier</span>
+          <span class="val" id="info-verifier" style="color:var(--muted)">—</span>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <!-- Dropdown + comments -->
+      <div class="ctrl-section">
+        <div class="section-label">Update Category</div>
+        <select id="cat-select">
+          <option value="">— Select Category —</option>
+        </select>
+        <div class="section-label" style="margin-top:10px">Comments</div>
+        <textarea id="comments-input" placeholder="Add notes here…"></textarea>
+        <button id="save-btn" onclick="saveRow()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Save to Sheet
+        </button>
+        <div id="save-status"></div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="ctrl-section">
+        <div class="section-label">Navigation</div>
+        <div class="nav-row">
+          <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            Prev
+          </button>
+          <button class="nav-btn" id="next-btn" onclick="navigate(1)">
+            Next
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+        <div class="kbd-hint" style="margin-top:10px">
+          <kbd>←</kbd> Previous &nbsp;·&nbsp; <kbd>→</kbd> Next &nbsp;·&nbsp; <kbd>S</kbd> Save
+        </div>
+      </div>
+
+      <!-- Filter by trainer -->
+      <div class="ctrl-section">
+        <div class="section-label">Filter by Trainer</div>
+        <select id="trainer-filter"
+          style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:8px 12px;font-size:13px;font-family:var(--sans);outline:none;"
+          onchange="applyTrainerFilter()">
+          <option value="">All Trainers</option>
+        </select>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG (pre-filled) ──────────────────────────────────────────────
+const DEFAULT_SHEET_ID  = '145w-MbnPIs93rFIVCvuY_ulGwIKkORfKNJxWPCE1Oz0';
+const DEFAULT_API_KEY   = 'AIzaSyAWe9XJxIcyFRZieMZ7E9PoiVMAVK20cvQ';
+const DEFAULT_TAB       = 'Sheet1';
+
+// ── CATEGORIES ──────────────────────────────────────────────────────
+const CATEGORIES = [
+  "Verifying",
+  "Mamta card",
+  "Stander Immunization card by Health Dep",
+  "Slip with QR code / Check up slip",
+  "Ghotki Immunization Card",
+  "PPHI OPD Ticket / with QR code",
+  "PPHI Discharge Card",
+  "BISP Card",
+  "Expanded Program on immunization",
+  "Antenatal Card",
+  "National Expanded Program on immunization Sindh",
+  "AAP OTP beneficiary Card",
+  "PPHI Sindh Umerkot Card",
+  "PPHI Sindh Mirpurkhas Card",
+  "Vaccination Card",
+  "Badin Card",
+  "other"
+];
+
+// ── STATE ────────────────────────────────────────────────────────────
+let allRows       = [];
+let filteredRows  = [];
+let currentIdx    = 0;
+let gasUrl        = localStorage.getItem('gas_url') || '';
+let sheetId       = localStorage.getItem('sheet_id')  || DEFAULT_SHEET_ID;
+let apiKey        = localStorage.getItem('api_key')   || DEFAULT_API_KEY;
+let sheetTab      = localStorage.getItem('sheet_tab') || DEFAULT_TAB;
+
+// ── APPS SCRIPT CODE (shown in modal) ───────────────────────────────
+const GAS_CODE = `function doPost(e) {
+  var params = JSON.parse(e.postData.contents);
+  var sheet = SpreadsheetApp.openById("${DEFAULT_SHEET_ID}")
+                .getSheetByName("Sheet1");
+  var rowNum = params.row; // 1-based, including header
+  sheet.getRange(rowNum, 5).setValue(params.category);
+  sheet.getRange(rowNum, 6).setValue(params.comments);
+  return ContentService.createTextOutput(
+    JSON.stringify({status:"ok"})
+  ).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doGet(e) {
+  return ContentService.createTextOutput("OK");
+}`;
+
+document.getElementById('gas-code-block').textContent = GAS_CODE;
+
+// ── BOOT ────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  if (sheetId && apiKey) {
+    loadSheet();
+  } else {
+    document.getElementById('loading-overlay').style.display = 'none';
+    document.getElementById('setup-panel').style.display = 'block';
+    document.getElementById('api-key-input').value  = DEFAULT_API_KEY;
+    document.getElementById('sheet-id-input').value = DEFAULT_SHEET_ID;
+    document.getElementById('sheet-tab-input').value= DEFAULT_TAB;
+  }
+  buildCategoryUI();
+});
+
+function initFromSetup() {
+  sheetId  = document.getElementById('sheet-id-input').value.trim()  || DEFAULT_SHEET_ID;
+  apiKey   = document.getElementById('api-key-input').value.trim()   || DEFAULT_API_KEY;
+  sheetTab = document.getElementById('sheet-tab-input').value.trim() || DEFAULT_TAB;
+  localStorage.setItem('sheet_id',  sheetId);
+  localStorage.setItem('api_key',   apiKey);
+  localStorage.setItem('sheet_tab', sheetTab);
+  document.getElementById('setup-panel').style.display = 'none';
+  document.getElementById('loading-overlay').style.display = 'flex';
+  loadSheet();
+}
+
+// ── LOAD SHEET ───────────────────────────────────────────────────────
+async function loadSheet() {
+  setLoading('Fetching sheet data…');
+  try {
+    const range  = encodeURIComponent(`${sheetTab}!A:G`);
+    const url    = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
+    const resp   = await fetch(url);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const json   = await resp.json();
+    const rows   = json.values || [];
+    if (rows.length < 2) throw new Error('Sheet appears empty or has only headers.');
+
+    // Skip header row (row index 0 = row 1 in sheet)
+    allRows = rows.slice(1).map((r, i) => ({
+      sheetRow : i + 2, // 1-based, row 2 onwards
+      startTime: r[0] || '',
+      trainer  : r[1] || '',
+      cnic     : r[2] || '',
+      link     : r[3] || '',
+      category : r[4] || '',
+      comments : r[5] || '',
+      verifier : r[6] || ''
+    }));
+
+    filteredRows = [...allRows];
+    buildTrainerFilter();
+    let startIdx = filteredRows.findIndex(r => r.category === 'Verifying');
+    currentIdx = startIdx !== -1 ? startIdx : 0;
+    showRow(currentIdx);
+    hideLoading();
+    document.getElementById('main').style.display = 'block';
+    document.getElementById('total-rows').textContent = filteredRows.length;
+  } catch(err) {
+    setLoading(`Error: ${err.message}`);
+    setTimeout(() => {
+      hideLoading();
+      document.getElementById('setup-panel').style.display = 'block';
+    }, 2500);
+  }
+}
+
+// ── BUILD UI ─────────────────────────────────────────────────────────
+function buildCategoryUI() {
+  const select = document.getElementById('cat-select');
+  const pills  = document.getElementById('cat-pills');
+  CATEGORIES.forEach((cat, i) => {
+    // Dropdown option
+    const opt = document.createElement('option');
+    opt.value = cat; opt.textContent = cat;
+    select.appendChild(opt);
+    // Pill
+    const pill = document.createElement('span');
+    pill.className = `cat-pill c${i+1}`;
+    pill.textContent = cat.length > 20 ? cat.slice(0,19)+'…' : cat;
+    pill.title = cat;
+    pill.dataset.cat = cat;
+    pill.onclick = () => {
+      document.getElementById('cat-select').value = cat;
+      updatePills(cat);
+      saveRow(); // Auto-save on category change
+    };
+    pills.appendChild(pill);
+  });
+
+  // Auto-save when dropdown changes
+  select.addEventListener('change', (e) => {
+    updatePills(e.target.value);
+    saveRow();
+  });
+}
+
+function buildTrainerFilter() {
+  const sel = document.getElementById('trainer-filter');
+  const trainers = [...new Set(allRows.map(r => r.trainer))].sort();
+  trainers.forEach(t => {
+    const o = document.createElement('option');
+    o.value = t; o.textContent = t.replace(/_/g,' ');
+    sel.appendChild(o);
+  });
+}
+
+function applyTrainerFilter() {
+  const val = document.getElementById('trainer-filter').value;
+  filteredRows = val ? allRows.filter(r => r.trainer === val) : [...allRows];
+  let startIdx = filteredRows.findIndex(r => r.category === 'Verifying');
+  currentIdx = startIdx !== -1 ? startIdx : 0;
+  document.getElementById('total-rows').textContent = filteredRows.length;
+  showRow(currentIdx);
+}
+
+function updatePills(cat) {
+  document.querySelectorAll('.cat-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.cat === cat);
+  });
+}
+
+// ── SHOW ROW ─────────────────────────────────────────────────────────
+function showRow(idx) {
+  if (!filteredRows.length) return;
+  const row = filteredRows[idx];
+
+  document.getElementById('cur-idx').textContent   = idx + 1;
+  document.getElementById('info-trainer').textContent  = row.trainer.replace(/_/g,' ') || '—';
+  document.getElementById('info-time').textContent     = row.startTime || '—';
+  document.getElementById('info-cnic').textContent     = row.cnic || '—';
+  document.getElementById('info-current-cat').textContent = row.category || '(none)';
+  document.getElementById('info-verifier').textContent = row.verifier || '—';
+
+  // Category UI
+  let cat = row.category || '';
+  if (cat === 'Verifying' || cat === '') {
+    cat = 'Stander Immunization card by Health Dep';
+  }
+  document.getElementById('cat-select').value = cat;
+  updatePills(cat);
+
+  // Comments
+  document.getElementById('comments-input').value = row.comments || '';
+
+  // Image
+  loadImage(row.link);
+  
+  // Preload next images for smoother navigation
+  preloadImages(idx);
+
+  // Progress
+  const pct = filteredRows.length > 1
+    ? Math.round((idx / (filteredRows.length-1)) * 100) : 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  // Nav buttons
+  document.getElementById('prev-btn').disabled = idx === 0;
+  document.getElementById('next-btn').disabled = idx === filteredRows.length - 1;
+
+  // Clear status
+  document.getElementById('save-status').textContent = '';
+  document.getElementById('save-status').className   = '';
+}
+
+function loadImage(url) {
+  const img    = document.getElementById('card-image');
+  const errDiv = document.getElementById('img-error');
+  const lbl    = document.getElementById('img-label');
+
+  if (!url) {
+    img.style.display = 'none';
+    errDiv.style.display = 'flex';
+    errDiv.querySelector('.err-icon').textContent = '🚫';
+    errDiv.querySelector('div').firstChild.textContent = 'No image URL';
+    lbl.textContent = 'No link';
+    return;
+  }
+
+  img.style.display = 'block';
+  img.className = 'loading';
+  errDiv.style.display = 'none';
+
+  // Open link buttons
+  document.getElementById('img-open-link').href = url;
+  document.getElementById('err-open-link').href = url;
+
+  // Short label from file param
+  const fileMatch = url.match(/file=(\d+)/);
+  lbl.textContent = fileMatch ? `file: ${fileMatch[1]}` : 'Loading…';
+
+  // Point to local Python proxy server
+  const proxyUrl = `http://localhost:5000/image?url=${encodeURIComponent(url)}`;
+  img.src = proxyUrl;
+}
+
+function handleImgLoad() {
+  document.getElementById('card-image').classList.remove('loading');
+}
+
+function handleImgError() {
+  const img    = document.getElementById('card-image');
+  const errDiv = document.getElementById('img-error');
+  img.style.display = 'none';
+  errDiv.style.display = 'flex';
+  errDiv.querySelector('.err-icon').textContent = '🔐';
+}
+
+function preloadImages(currentIndex) {
+  const PRELOAD_COUNT = 20;
+  for (let i = 1; i <= PRELOAD_COUNT; i++) {
+    const nextIdx = currentIndex + i;
+    if (nextIdx >= filteredRows.length) break;
+    const url = filteredRows[nextIdx].link;
+    if (url) {
+      const proxyUrl = `http://localhost:5000/image?url=${encodeURIComponent(url)}`;
+      const img = new Image();
+      img.src = proxyUrl;
+    }
+  }
+}
+
+// ── NAVIGATION ───────────────────────────────────────────────────────
+function navigate(dir) {
+  saveRow(); // Auto-save changes before moving
+  const newIdx = currentIdx + dir;
+  if (newIdx < 0 || newIdx >= filteredRows.length) return;
+  currentIdx = newIdx;
+  showRow(currentIdx);
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+  if (e.key === 'ArrowRight') navigate(1);
+  if (e.key === 'ArrowLeft')  navigate(-1);
+  if (e.key === 's' || e.key === 'S') saveRow();
+});
+
+// ── SAVE ─────────────────────────────────────────────────────────────
+async function saveRow() {
+  const row      = filteredRows[currentIdx];
+  const category = document.getElementById('cat-select').value;
+  const comments = document.getElementById('comments-input').value;
+
+  if (!category) {
+    setStatus('⚠ Select a category first', 'status-err');
+    return;
+  }
+
+  if (row.category === category && (row.comments || '') === comments) {
+    return; // Nothing changed, skip saving
+  }
+
+  // Update local state
+  row.category = category;
+  row.comments = comments;
+  document.getElementById('info-current-cat').textContent = category;
+
+  // Also update in allRows
+  const orig = allRows.find(r => r.sheetRow === row.sheetRow);
+  if (orig) { orig.category = category; orig.comments = comments; }
+
+  if (!gasUrl) {
+    setStatus('✓ Saved locally (setup write-back to sync to sheet)', 'status-ok');
+    return;
+  }
+
+  setStatus('⟳ Saving to sheet…', 'status-saving');
+  document.getElementById('save-btn').disabled = true;
+
+  try {
+    await fetch(gasUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ row: row.sheetRow, category, comments })
+    });
+    setStatus('✓ Saved to Google Sheet!', 'status-ok');
+  } catch(err) {
+    setStatus('✗ Save failed: ' + err.message, 'status-err');
+  } finally {
+    document.getElementById('save-btn').disabled = false;
+  }
+}
+
+function setStatus(msg, cls) {
+  const el = document.getElementById('save-status');
+  el.textContent = msg;
+  el.className = cls;
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────
+function saveGasUrl() {
+  const url = document.getElementById('gas-url-input').value.trim();
+  if (url) {
+    gasUrl = url;
+    localStorage.setItem('gas_url', url);
+    document.getElementById('script-modal').classList.remove('show');
+    setStatus('✓ Write-back URL saved!', 'status-ok');
+  }
+}
+function closeModal() {
+  document.getElementById('script-modal').classList.remove('show');
+}
+
+// ── LOADING ───────────────────────────────────────────────────────────
+function setLoading(msg) {
+  document.getElementById('loading-overlay').style.display = 'flex';
+  document.getElementById('loading-text').textContent = msg;
+}
+function hideLoading() {
+  document.getElementById('loading-overlay').style.display = 'none';
+}
+</script>
+</body>
+</html>
